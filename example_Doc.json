@@ -1,0 +1,32 @@
+{
+  "_index": "manager-search:so-d0gealert-alerts-2022.12.13",
+  "_id": "BY_sDIUByYC9ePtMKP6q",
+  "_version": 1,
+  "_score": 0,
+  "_source": {
+    "rule": {
+      "name": "Testing SSH rule",
+      "uuid": "999999",
+      "category": "ssh"
+    },
+    "event": {
+      "dataset": "alert",
+      "module": "d0g3Alert",
+      "severity": 3,
+      "severity_label": "high",
+      "timestamp": "2022-12-13T19:18:01.000Z"
+    },
+    "hunt_link": "https://secOnionHost/#/hunt?q=%28%221%3AjQ6YMrHb7QzMShZCpuIyki2kHZY%3D%22%29%20%7C%20groupby%20%22event.module%22%20%22event.dataset%22",
+    "@timestamp": "2022-12-13T19:15:18.096Z",
+    "destination": {
+      "ip": "11.22.33.44",
+      "port": 22
+    },
+    "source": {
+      "ip": "3.4.5.6"
+    },
+    "network": {
+      "community_id": "1:jQ6YMrHb7QzMShZCpuIyki2kHZY="
+    }
+  }
+}

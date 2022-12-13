@@ -1,0 +1,46 @@
+# Elasticsearch Host
+elasticsearch_host: "localhost:9200"
+
+# (Required)
+# Rule name, must be unique
+name: Template D0g3Alert
+
+# mandatory fields for D0g3Alert
+rule.title: "Template D0g3Alert"
+rule.id: "999999"
+rule.severity: 3
+rule.category: "ssh"
+
+# optional fields
+# Default is alert
+event.dataset: "alert"
+# Default is d0g3Alert
+event.module: "d0g3Alert" 
+# fields to add to EA generated doc, must be list
+event.fields: 
+  - '@timestamp'
+  - destination.ip
+  - destination.port
+  - source.ip
+  - network.community_id
+# Mitre Fields
+# ID for the alert
+mitre.id: T1021
+mitre.name: Remote Services
+# Hunt link filter fields. must be list
+link.filters:
+  - network.community_id
+  - log.id.uid
+
+# alert type / filter
+type: any
+index: "*:so-zeek-*"
+
+filter:
+- query:
+    query_string:
+      query: "destination.port:22"
+
+alert:
+- "modules.custom.d0g3Alert-es.D0g3Alert"
+
