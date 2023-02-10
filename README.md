@@ -14,7 +14,7 @@ Once you have the alerter in-place, you can utilize the `d0g3alert-template.yaml
 
 If you would like to have it generate a link to pivot to, be sure to change the hostname in lines 130.
 ```Python
-        payload.update({'hunt_link': 'https://<replace with secOnion host address>/#/hunt?q='+create_link(match, self.rule['link.filters'])})
+payload.update({'hunt_link': 'https://<replace with secOnion host address>/#/hunt?q='+create_link(match, self.rule['link.filters'])})
 ```          
 
 ## Put it in Prod
