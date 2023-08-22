@@ -13,7 +13,7 @@ class D0g3N0t1fy(Alerter):
   """
   build webhook alert based on info in observation
   """
-  required_options = set(['event.fields', 'subject_args', 'webhook_url'])
+  required_options = set(['event_fields', 'subject_args', 'webhook_url'])
 
   def alert(self, matches):
     for match in matches:
@@ -28,7 +28,7 @@ class D0g3N0t1fy(Alerter):
       headers = {
         'Conten-Type': 'application/json'
       }
-      webhook_url = self.rule['discord_webhook_url']
+      webhook_url = self.rule['webhook_url']
       payload = {
         "content": message,
         "embeds": [
@@ -38,14 +38,6 @@ class D0g3N0t1fy(Alerter):
         ]
       }
       
-      payload = {
-        "content": message,
-        "embeds": [
-          {
-            "description": description
-          }
-        ]
-      }
       response = requests.post(webhook_url, headers=headers, json=payload)
 
       if response.status_code != 204:
@@ -153,11 +145,11 @@ class D0g3N0t1fy(Alerter):
           linkString = f'"{item}"'
         else:
           linkString = linkString + f' OR "{item}"'
-      linkString = '('+linkString+')'+' | groupby "event.module" "event.dataset"'
+      linkString = '('+linkString+')'+' | groupby event.module event.dataset | groupby dns.query.name | groupby dns.answers.name | groupby ssl.server_name | groupby destination.ip | groupby destination_geo.organization_name | groupby source.ip'
       linkString = urllib.parse.quote(linkString)
       return linkString
   
-    send_message(*create_payload(match, self.rule['subject_args'], self.rule['event.fields']))
+    send_message(create_payload(match, self.rule['subject_args'], self.rule['event_fields']))
 
   def get_info(self):
     return {'type': 'D0g3N0t1fy'}

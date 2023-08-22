@@ -13,7 +13,7 @@ class D0g3Alert(Alerter):
   """
   Use matched data to create alerts in elasticsearch
   """
-  required_options = set(['rule.title','rule.id','rule.category','rule.severity'])
+  required_options = set(['rule_title','rule_id','rule_category','rule_severity'])
 
   def alert(self, matches):
     for match in matches:
@@ -26,7 +26,7 @@ class D0g3Alert(Alerter):
         creds = (self.rule['es_username'], self.rule['es_password'])
       
       # set rule_level
-      alert_severity = self.rule['rule.severity']
+      alert_severity = self.rule['rule_severity']
       if alert_severity == 4:
         rule_level = 'critical'
       elif alert_severity == 3:
@@ -48,14 +48,14 @@ class D0g3Alert(Alerter):
       
       payload = {
         "rule": {
-          "name": self.rule['rule.title'],
-          "uuid": self.rule['rule.id'],
-          "category": self.rule['rule.category'] 
+          "name": self.rule['rule_title'],
+          "uuid": self.rule['rule_id'],
+          "category": self.rule['rule_category'] 
           },
         "event":{
           "dataset": event_dataset,
           "module": event_module,
-          "severity": self.rule['rule.severity'],
+          "severity": self.rule['rule_severity'],
           "severity_label": rule_level,
           "timestamp": timestamp 
           }
@@ -126,12 +126,12 @@ class D0g3Alert(Alerter):
         return linkString
       
       # set additional payload fields
-      if 'link.filters' in self.rule.keys():
-        payload.update({'hunt_link': 'https://<replace with secOnion host address>/#/hunt?q='+create_link(
-          match, self.rule['link.filters'])})
+      if 'link_filters' in self.rule.keys():
+        payload.update({'hunt_link': 'https://sec-manager.w3legue.com/#/hunt?q='+create_link(
+          match, self.rule['link_filters'])})
       
-      if 'event.fields' in self.rule.keys():
-        payload.update(createDictionary(match, self.rule['event.fields']))
+      if 'event_fields' in self.rule.keys():
+        payload.update(createDictionary(match, self.rule['event_fields']))
       else:
         payload.update(match)
       

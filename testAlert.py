@@ -5,8 +5,10 @@ alert_obs = {"@timestamp":"2023-02-10T02:24:35.095Z","@version":"1","destination
 dhcpLong = {"@timestamp": "2023-02-10T01:32:56.656Z","client": {"address": "172.17.40.62"},"event": {"dataset": "alert","module": "d0g3alert","severity": 3,"severity_label": "high","timestamp": "2023-02-10T01:34:08.000Z"},"host": {"hostname": "ESP_10CC5F","mac": "50:02:91:10:cc:5f"},"rule": {"category": "dhcp","name": "New DHCP Client Found","uuid": "000001"},"soc_id": "Hlj1OIYBgYTNIJ1OV1to","soc_score": 6.043156,"soc_type": "","soc_timestamp": "2023-02-10T01:32:56.656Z","soc_source": "sec-manager:so-d0g3alert-alerts-2023.02.10"}
 webhook_url = "https://discord.com/api/webhooks/951933565803839558/MEOJ2jeeHbB1DVFAsR9LA_QWNlWCSRPDW3mdLBWJ-Ytlnyhp-AdVEhuElKxpK8cbpdIO"
 
-event_fields = ['@timestamp', 'client.address', 'host.hostname']
+event_fields = ['@timestamp', 'client.address', 'horst.hostname']
+#event_fields = ['@temestamp', 'client.address', 'host.hostname']
 subjectLine = ['event.severity_label', 'rule.name']
+#subjectLine = ['@termstamp', 'rule.name']
 
 def send_message(message, description):
   headers = {
@@ -39,12 +41,22 @@ def create_payload(obs, subjectArgs, searchFields):
     for field in subjectArgs:
       if '.' in field:
         field = field.split('.')
-        subject = subject + f"{dict_loop(obs, field)}"
+        value = dict_loop(obs, field)
+        if not value: # break if can't find value
+          addColon = False
+          continue
+        subject = subject + f"{value}"
         if addColon:
           subject = subject + " : "
           addColon = False
       else:
-        subject = subject + f"{field}"
+        try:
+          subject = subject + f"{obs[field]}"
+        except Exception as e:
+          exception = f"{type(e).__name__}: {e}"
+          print(f"{exception}")
+          addColon = False
+          continue
         if addColon:
           subject = subject + " : "
           addColon = False
@@ -52,18 +64,20 @@ def create_payload(obs, subjectArgs, searchFields):
   message_contents = "Event Details:"
   if searchFields:
     for field in searchFields:
-      message_contents = message_contents + "\n" + f"{field} : "
       if '.' in field:
-        field = field.split('.')
-        message_contents = message_contents + f"{dict_loop(obs, field)}"
+        fields = field.split('.')
+        value = dict_loop(obs, fields)
+        if value:
+          message_contents = message_contents + f"\n{' '.join(fields).title()} : {value}"
       else:
         try:
-          message_contents = message_contents + f"{obs.get(field)}"
+          message_contents = message_contents + f"\n{field.title()} : {obs[field]}"
         except Exception as e:
             exception = f"{type(e).__name__}: {e}"
             print(f"{exception}")
         continue
   
+  # add links
   if 'hunt_link' in obs.keys():
     message_contents = message_contents + "\n" + f"[Hunt Link](https://sec-manager.w3legue.com/#/hunt?q={obs.get('hunt_link')})"
   elif 'network' in obs.keys() and 'community_id' in obs['network'].keys():
@@ -75,14 +89,22 @@ def create_payload(obs, subjectArgs, searchFields):
       link_fields = searchFields
       link_fields.remove('@timestamp')
     # to-do: add link to message_contents
+    else:
+      link_fields = searchFields
     message_contents = message_contents + "\n" + f"[Hunt Link](https://sec-manager.w3legue.com/#/hunt?q={create_link(obs, link_fields)})"
 
   return subject, message_contents
 
-def dict_loop(dict, search):
-  temp = dict
+def dict_loop(obs, search):
+  temp = obs
   for i in search:
-    temp = temp[i]
+    try:
+      temp = temp[i]
+    except Exception as e:
+      exception = f"{type(e).__name__}: {e}"
+      print(f"{exception}")
+  if type(temp) is dict:
+    temp = False
   return temp
 
 def create_link(obs, filters):
