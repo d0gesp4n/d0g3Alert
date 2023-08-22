@@ -14,7 +14,7 @@ def send_message(message, description):
   headers = {
     'Conten-Type': 'application/json'
   }
-  webhook_url = "https://discord.com/api/webhooks/951933565803839558/MEOJ2jeeHbB1DVFAsR9LA_QWNlWCSRPDW3mdLBWJ-Ytlnyhp-AdVEhuElKxpK8cbpdIO"
+  webhook_url = ""
   payload = {
     "content": message,
     "embeds": [
